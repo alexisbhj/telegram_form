@@ -40,39 +40,17 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--tg-theme-button-color, #0088cc);
         }
         button {
             width: 100%;
             padding: 14px;
-            background: var(--tg-theme-button-color, #0088cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            background: #0088cc;
+            color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-        }
-        button:active {
-            opacity: 0.8;
-        }
-        .success {
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-        .debug {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 5px;
-            font-size: 12px;
-            word-break: break-all;
         }
     </style>
 </head>
@@ -83,101 +61,53 @@
         <form id="myForm">
             <div class="form-group">
                 <label for="nom">Nom complet *</label>
-                <input type="text" id="nom" name="nom" required>
+                <input type="text" id="nom" required>
             </div>
             
             <div class="form-group">
                 <label for="email">Email *</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" required>
             </div>
             
             <div class="form-group">
                 <label for="telephone">Téléphone *</label>
-                <input type="tel" id="telephone" name="telephone" required>
+                <input type="tel" id="telephone" required>
             </div>
             
             <div class="form-group">
-                <label for="message">Message (optionnel)</label>
-                <textarea id="message" name="message" rows="4"></textarea>
+                <label for="message">Message</label>
+                <textarea id="message" rows="4"></textarea>
             </div>
             
             <button type="submit">✅ Envoyer</button>
         </form>
-        
-        <div class="success" id="success">
-            <h2>✅ Formulaire envoyé !</h2>
-            <p>Merci pour votre réponse.</p>
-        </div>
-
-        <!-- Zone de debug (optionnelle, pour voir ce qui est envoyé) -->
-        <div class="debug" id="debug" style="display:none;"></div>
     </div>
 
     <script>
-        // Vérifier que le script Telegram est bien chargé
-        if (typeof window.Telegram === 'undefined') {
-            alert('Erreur : Telegram WebApp SDK non chargé');
-        }
-
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         
-        // Debug : afficher les infos Telegram
-        console.log('Telegram WebApp initialisé:', tg);
-        console.log('User data:', tg.initDataUnsafe);
-        
-        // Élargir l'application
+        // Préparer l'app
+        tg.ready();
         tg.expand();
         
-        // Activer la confirmation de fermeture
-        tg.enableClosingConfirmation();
-        
-        // Gérer la soumission du formulaire
+        // Gérer le formulaire
         document.getElementById('myForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            console.log('Formulaire soumis');
-            
-            // Récupérer les données du formulaire
-            let formData = {
+            // Créer les données
+            const data = {
                 nom: document.getElementById('nom').value,
                 email: document.getElementById('email').value,
                 telephone: document.getElementById('telephone').value,
                 message: document.getElementById('message').value,
-                user_id: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
-                username: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : null,
+                user_id: tg.initDataUnsafe?.user?.id || null,
+                username: tg.initDataUnsafe?.user?.username || null,
                 timestamp: new Date().toISOString()
             };
             
-            console.log('Données à envoyer:', formData);
-            
-            // Afficher les données dans la zone debug (optionnel)
-            document.getElementById('debug').style.display = 'block';
-            document.getElementById('debug').textContent = 'Données envoyées : ' + JSON.stringify(formData, null, 2);
-            
-            // ENVOYER LES DONNÉES À TELEGRAM
-            try {
-                let dataString = JSON.stringify(formData);
-                console.log('String JSON:', dataString);
-                tg.sendData(dataString);
-                console.log('sendData appelé avec succès');
-            } catch (error) {
-                console.error('Erreur lors de sendData:', error);
-                alert('Erreur: ' + error.message);
-            }
-            
-            // Afficher le message de succès
-            document.getElementById('myForm').style.display = 'none';
-            document.getElementById('success').style.display = 'block';
-            
-            // Fermer après 2 secondes
-            setTimeout(function() {
-                tg.close();
-            }, 2000);
+            // ENVOYER À TELEGRAM
+            tg.sendData(JSON.stringify(data));
         });
-        
-        // Indiquer que l'app est prête
-        tg.ready();
-        console.log('WebApp ready');
     </script>
 </body>
 </html>
