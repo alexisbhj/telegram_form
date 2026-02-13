@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire Telegram</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color, #0088cc);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:active {
+            opacity: 0.8;
+        }
+        .success {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Formulaire d'inscription</h1>
+        
+        <form id="myForm">
+            <div class="form-group">
+                <label for="nom">Nom complet *</label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="telephone">Téléphone *</label>
+                <input type="tel" id="telephone" name="telephone" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message (optionnel)</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+            
+            <button type="submit">✅ Envoyer</button>
+        </form>
+        
+        <div class="success" id="success">
+            <h2>✅ Formulaire envoyé !</h2>
+            <p>Merci pour votre réponse.</p>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        
+        // Élargir l'application
+        tg.expand();
+        
+        // Activer le bouton de fermeture
+        tg.enableClosingConfirmation();
+        
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Récupérer les données du formulaire
+            let formData = {
+                nom: document.getElementById('nom').value,
+                email: document.getElementById('email').value,
+                telephone: document.getElementById('telephone').value,
+                message: document.getElementById('message').value,
+                user_id: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
+                username: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : null,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Envoyer les données à Telegram
+            tg.sendData(JSON.stringify(formData));
+            
+            // Afficher le message de succès
+            document.getElementById('myForm').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+            
+            // Fermer après 2 secondes
+            setTimeout(function() {
+                tg.close();
+            }, 2000);
+        });
+        
+        // Prêt
+        tg.ready();
+    </script>
+</body>
+</html>
+```
+
+4. Clique sur **"Commit changes"** (bouton vert en haut à droite)
+5. Confirme en cliquant encore sur **"Commit changes"**
+
+## Étape 4 : Activer GitHub Pages
+
+1. Dans ton repository, clique sur **"Settings"** (en haut)
+2. Dans le menu de gauche, clique sur **"Pages"**
+3. Sous **"Source"**, sélectionne **"Deploy from a branch"**
+4. Sous **"Branch"**, sélectionne **"main"** et **"/ (root)"**
+5. Clique sur **"Save"**
+
+## Étape 5 : Récupérer l'URL de ton formulaire
+
+Attends **1-2 minutes**, puis :
+
+1. Rafraîchis la page Settings → Pages
+2. Tu verras un message : **"Your site is live at https://ton-username.github.io/telegram-form/"**
+3. **Copie cette URL** ✅
+
+## Étape 6 : Tester ton formulaire
+
+1. Ouvre l'URL dans ton navigateur
+2. Vérifie que le formulaire s'affiche bien
+
+---
+
+## 🎯 Maintenant, passe à Make !
+
+Ton formulaire est prêt. L'URL à utiliser est :
+```
+https://ton-username.github.io/telegram-form/
