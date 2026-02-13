@@ -66,6 +66,14 @@
             padding: 20px;
             display: none;
         }
+        .debug {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 12px;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -100,19 +108,34 @@
             <h2>✅ Formulaire envoyé !</h2>
             <p>Merci pour votre réponse.</p>
         </div>
+
+        <!-- Zone de debug (optionnelle, pour voir ce qui est envoyé) -->
+        <div class="debug" id="debug" style="display:none;"></div>
     </div>
 
     <script>
+        // Vérifier que le script Telegram est bien chargé
+        if (typeof window.Telegram === 'undefined') {
+            alert('Erreur : Telegram WebApp SDK non chargé');
+        }
+
         let tg = window.Telegram.WebApp;
+        
+        // Debug : afficher les infos Telegram
+        console.log('Telegram WebApp initialisé:', tg);
+        console.log('User data:', tg.initDataUnsafe);
         
         // Élargir l'application
         tg.expand();
         
-        // Activer le bouton de fermeture
+        // Activer la confirmation de fermeture
         tg.enableClosingConfirmation();
         
+        // Gérer la soumission du formulaire
         document.getElementById('myForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            console.log('Formulaire soumis');
             
             // Récupérer les données du formulaire
             let formData = {
@@ -125,8 +148,22 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Envoyer les données à Telegram
-            tg.sendData(JSON.stringify(formData));
+            console.log('Données à envoyer:', formData);
+            
+            // Afficher les données dans la zone debug (optionnel)
+            document.getElementById('debug').style.display = 'block';
+            document.getElementById('debug').textContent = 'Données envoyées : ' + JSON.stringify(formData, null, 2);
+            
+            // ENVOYER LES DONNÉES À TELEGRAM
+            try {
+                let dataString = JSON.stringify(formData);
+                console.log('String JSON:', dataString);
+                tg.sendData(dataString);
+                console.log('sendData appelé avec succès');
+            } catch (error) {
+                console.error('Erreur lors de sendData:', error);
+                alert('Erreur: ' + error.message);
+            }
             
             // Afficher le message de succès
             document.getElementById('myForm').style.display = 'none';
@@ -138,10 +175,9 @@
             }, 2000);
         });
         
-        // Prêt
+        // Indiquer que l'app est prête
         tg.ready();
+        console.log('WebApp ready');
     </script>
 </body>
 </html>
-```
-
